@@ -40,9 +40,9 @@
         self.popupMenuView.automaticallyHidesWhenUserTap = YES;// 点击空白地方自动消失
         self.popupMenuView.preferLayoutDirection = QMUIPopupContainerViewLayoutDirectionBelow;
         self.popupMenuView.maximumWidth = 220;
-        self.popupMenuView.items = @[[QMUIPopupMenuButtonItem itemWithImage:UIImageMake(@"icon_emotion") title:@"分类 1" handler:nil],
-                                     [QMUIPopupMenuButtonItem itemWithImage:UIImageMake(@"icon_emotion") title:@"分类 2" handler:nil],
-                                     [QMUIPopupMenuButtonItem itemWithImage:UIImageMake(@"icon_emotion") title:@"分类 3" handler:nil]];
+        self.popupMenuView.items = @[[QMUIPopupMenuItem itemWithImage:UIImageMake(@"icon_emotion") title:@"分类 1" handler:nil],
+                                     [QMUIPopupMenuItem itemWithImage:UIImageMake(@"icon_emotion") title:@"分类 2" handler:nil],
+                                     [QMUIPopupMenuItem itemWithImage:UIImageMake(@"icon_emotion") title:@"分类 3" handler:nil]];
         self.popupMenuView.sourceView = self.titleView;
         __weak __typeof(self)weakSelf = self;
         self.popupMenuView.didHideBlock = ^(BOOL hidesByUserTap) {

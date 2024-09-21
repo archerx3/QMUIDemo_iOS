@@ -125,7 +125,6 @@
     QMUIPopupMenuView *menuView = QMUIPopupMenuView.appearance;
     menuView.itemSeparatorColor = UIColor.qd_separatorColor;
     menuView.sectionSeparatorColor = UIColor.qd_separatorColor;
-    menuView.itemTitleColor = UIColor.qd_tintColor;
 }
 
 @end
@@ -147,7 +146,9 @@
     QMUIButton *button = [[QMUIButton alloc] qmui_initWithSize:CGSizeMake(200, 40)];
     button.adjustsButtonWhenHighlighted = YES;
     button.titleLabel.font = UIFontBoldMake(14);
+    button.subtitleLabel.font = UIFontMake(12);
     [button setTitleColor:UIColorWhite forState:UIControlStateNormal];
+    button.subtitleColor = UIColorWhite;
     button.backgroundColor = UIColor.qd_tintColor;
     button.highlightedBackgroundColor = [UIColor.qd_tintColor qmui_transitionToColor:UIColorBlack progress:.15];// 高亮时的背景色
     button.layer.cornerRadius = 4;
@@ -156,6 +157,7 @@
 
 + (QMUIButton *)generateLightBorderedButton {
     QMUIButton *button = [[QMUIButton alloc] qmui_initWithSize:CGSizeMake(200, 40)];
+    __weak __typeof(button)weakButton = button;
     button.titleLabel.font = UIFontBoldMake(14);
     button.tintColorAdjustsTitleAndImage = UIColor.qd_tintColor;
     button.backgroundColor = [UIColor qmui_colorWithThemeProvider:^UIColor * _Nonnull(__kindof QMUIThemeManager * _Nonnull manager, __kindof NSObject<NSCopying> * _Nullable identifier, __kindof NSObject * _Nullable theme) {
@@ -165,13 +167,16 @@
         return [UIColor.qd_tintColor qmui_transitionToColor:UIColor.qd_backgroundColor progress:.75];
     }];// 高亮时的背景色
     button.layer.borderColor = [UIColor qmui_colorWithThemeProvider:^UIColor * _Nonnull(__kindof QMUIThemeManager * _Nonnull manager, __kindof NSObject<NSCopying> * _Nullable identifier, __kindof NSObject * _Nullable theme) {
-        return [button.backgroundColor qmui_transitionToColor:UIColor.qd_tintColor progress:.5];
+        return [weakButton.backgroundColor qmui_transitionToColor:UIColor.qd_tintColor progress:.5];
     }].CGColor;
     button.layer.borderWidth = 1;
     button.layer.cornerRadius = 4;
     button.highlightedBorderColor = [UIColor qmui_colorWithThemeProvider:^UIColor * _Nonnull(__kindof QMUIThemeManager * _Nonnull manager, __kindof NSObject<NSCopying> * _Nullable identifier, __kindof NSObject * _Nullable theme) {
-        return [button.backgroundColor qmui_transitionToColor:UIColor.qd_tintColor progress:.9];
+        return [weakButton.backgroundColor qmui_transitionToColor:UIColor.qd_tintColor progress:.9];
     }];// 高亮时的边框颜色
+    button.qmui_setSelectedBlock = ^(BOOL selected) {
+        weakButton.layer.borderWidth = selected ? 2 : 1;
+    };
     return button;
 }
 
@@ -317,6 +322,8 @@ static NSArray<QMUIEmotion *> *QMUIEmotionArray;
             if ([obj.actionView isKindOfClass:UITextField.class]) {
                 ((UITextField *)obj.actionView).textColor = UIColor.qd_titleTextColor;
                 ((UITextField *)obj.actionView).qmui_borderColor = UIColor.qd_separatorColor;
+            } else if ([obj.actionView isKindOfClass:QMUIButton.class]) {
+                ((QMUIButton *)obj.actionView).backgroundColor = [UIColor.qd_backgroundColorHighlighted colorWithAlphaComponent:.5];
             }
         }];
     };

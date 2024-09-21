@@ -37,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeDebugItem:(QMUIInteractiveDebugPanelItem *)item;
 - (void)insertDebugItem:(QMUIInteractiveDebugPanelItem *)item atIndex:(NSUInteger)index;
 - (void)removeDebugItemAtIndex:(NSUInteger)index;
+- (__kindof QMUIInteractiveDebugPanelItem *)itemMatched:(BOOL (NS_NOESCAPE^)(__kindof QMUIInteractiveDebugPanelItem* item))block;
 
 - (void)presentInViewController:(UIViewController *)viewController;
 - (CGSize)contentSizeThatFits:(CGSize)size;

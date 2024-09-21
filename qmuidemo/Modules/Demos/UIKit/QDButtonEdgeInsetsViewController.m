@@ -82,6 +82,13 @@ const CGSize SizeForStaticSizeView = {140, 60};
     button.titleLabel.layer.borderColor = UIColorRed.CGColor;
     [button addTarget:self action:@selector(handleButtonEvent:) forControlEvents:UIControlEventTouchUpInside];
     [self.scrollView addSubview:button];
+    if ([button isKindOfClass:QMUIButton.class]) {
+        QMUIButton *b = (QMUIButton *)button;
+        b.subtitleLabel.font = UIFontMake(14);
+        b.subtitleLabel.textColor = UIColorWhite;
+        b.subtitleLabel.layer.borderWidth = PixelOne;
+        b.subtitleLabel.layer.borderColor = UIColorRed.CGColor;
+    }
     return button;
 }
 
@@ -90,6 +97,10 @@ const CGSize SizeForStaticSizeView = {140, 60};
     toButton.contentEdgeInsets = fromButton.contentEdgeInsets;
     toButton.imageEdgeInsets = fromButton.imageEdgeInsets;
     toButton.titleEdgeInsets = fromButton.titleEdgeInsets;
+    if ([toButton isKindOfClass:QMUIButton.class]) {
+        QMUIButton *b = (QMUIButton *)toButton;
+        b.subtitleEdgeInsets = fromButton.titleEdgeInsets;
+    }
 }
 
 - (UILabel *)generateLabelWithTitle:(NSString *)title {
@@ -165,6 +176,10 @@ const CGSize SizeForStaticSizeView = {140, 60};
     UISwitch *_shouldShowTitleSwitch;
     CALayer *_shouldShowTitleSeparatorLayer;
     
+    UILabel *_shouldShowSubtitleLabel;
+    UISwitch *_shouldShowSubtitleSwitch;
+    CALayer *_shouldShowSubtitleSeparatorLayer;
+    
     UILabel *_bigImageLabel;
     UISwitch *_bigImageSwitch;
     CALayer *_bigImageSeparatorLayer;
@@ -203,6 +218,12 @@ const CGSize SizeForStaticSizeView = {140, 60};
     _shouldShowTitleSeparatorLayer = [CALayer qmui_separatorLayer];
     [self.contentView.layer addSublayer:_shouldShowTitleSeparatorLayer];
     
+    // 是否要显示副标题
+    _shouldShowSubtitleLabel = [self generateLabelWithText:@"setSubtitle"];
+    _shouldShowSubtitleSwitch = [self generateSwitch];
+    _shouldShowSubtitleSeparatorLayer = [CALayer qmui_separatorLayer];
+    [self.contentView.layer addSublayer:_shouldShowSubtitleSeparatorLayer];
+    
     // 是否要显示超大图片
     _bigImageLabel = [self generateLabelWithText:@"bigImage"];
     _bigImageSwitch = [self generateSwitch];
@@ -235,7 +256,8 @@ const CGSize SizeForStaticSizeView = {140, 60};
 }
 
 - (CGSize)sizeThatFitsInContentView:(CGSize)size {
-    return CGSizeMake(size.width, 315);
+    NSInteger rowCount = 8;
+    return CGSizeMake(size.width, (45 + PixelOne * 2) * rowCount);
 }
 
 - (void)layoutSubviews {
@@ -253,6 +275,11 @@ const CGSize SizeForStaticSizeView = {140, 60};
     _shouldShowTitleSwitch.center = CGPointMake(switchCenter.x, _shouldShowTitleLabel.center.y);
     _shouldShowTitleSeparatorLayer.frame = CGRectSetY(_shouldShowImageSeparatorLayer.frame, CGRectGetMaxY(_shouldShowTitleLabel.frame) + 14);
     minY = ceil(CGRectGetMaxY(_shouldShowTitleSeparatorLayer.frame));
+    
+    _shouldShowSubtitleLabel.frame = CGRectSetY(_shouldShowSubtitleLabel.frame, minY + 14);
+    _shouldShowSubtitleSwitch.center = CGPointMake(switchCenter.x, _shouldShowSubtitleLabel.center.y);
+    _shouldShowSubtitleSeparatorLayer.frame = CGRectSetY(_shouldShowImageSeparatorLayer.frame, CGRectGetMaxY(_shouldShowSubtitleLabel.frame) + 14);
+    minY = ceil(CGRectGetMaxY(_shouldShowSubtitleSeparatorLayer.frame));
     
     _bigImageLabel.frame = CGRectSetY(_bigImageLabel.frame, minY + 14);
     _bigImageSwitch.center = CGPointMake(switchCenter.x, _bigImageLabel.center.y);
@@ -311,6 +338,8 @@ const CGSize SizeForStaticSizeView = {140, 60};
     _bindButton = bindButton;
     _shouldShowImageSwitch.on = !!bindButton.currentImage;
     _shouldShowTitleSwitch.on = !!bindButton.currentTitle;
+    _shouldShowSubtitleSwitch.enabled = [bindButton isKindOfClass:QMUIButton.class];
+    _shouldShowSubtitleSwitch.on = _shouldShowSubtitleSwitch.enabled && ((QMUIButton *)bindButton).subtitle.length;
     _bigImageSwitch.on = bindButton.currentImage.size.width >= 80;
     _longTitleSwitch.on = bindButton.currentTitle.length >= 20;
     _imagePositionSegmented.enabled = [bindButton isKindOfClass:[QMUIButton class]];
@@ -325,6 +354,11 @@ const CGSize SizeForStaticSizeView = {140, 60};
     }
     if (switchControl == _shouldShowTitleSwitch || switchControl == _longTitleSwitch) {
         [self updateTitleForButton:self.bindButton shouldShowTitle:_shouldShowTitleSwitch.on shouldShowLongTitle:_longTitleSwitch.on];
+    }
+    if (switchControl == _shouldShowSubtitleSwitch || switchControl == _longTitleSwitch) {
+        if ([self.bindButton isKindOfClass:QMUIButton.class]) {
+            [self updateSubtitleForButton:(QMUIButton *)self.bindButton shouldShowSubtitle:_shouldShowSubtitleSwitch.on shouldShowLongTitle:_longTitleSwitch.on];
+        }
     }
     
     [self updateLayoutForButton:self.bindButton];
@@ -357,6 +391,15 @@ const CGSize SizeForStaticSizeView = {140, 60};
     } else {
         NSString *title = shouldShowLongTitle ? @"很长很长的标题很长很长的标题很长很长的标题" : @"短标题";
         [button setTitle:title forState:UIControlStateNormal];
+    }
+}
+
+- (void)updateSubtitleForButton:(QMUIButton *)button shouldShowSubtitle:(BOOL)shouldShowSubtitle shouldShowLongTitle:(BOOL)shouldShowLongTitle {
+    if (!shouldShowSubtitle) {
+        button.subtitle = nil;
+    } else {
+        NSString *subtitle = shouldShowLongTitle ? @"很长很长的标题很长很长的标题很长很长的副标题" : @"副标题";
+        button.subtitle = subtitle;
     }
 }
 

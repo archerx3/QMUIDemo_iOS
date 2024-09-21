@@ -39,7 +39,7 @@
     __weak __typeof(self)weakSelf = self;
     QMUIPopupMenuView *menu = [[QMUIPopupMenuView alloc] init];
     menu.items = @[
-        [QMUIPopupMenuButtonItem itemWithImage:nil title:@"标准间距" handler:^(QMUIPopupMenuButtonItem * _Nonnull aItem) {
+        [QMUIPopupMenuItem itemWithTitle:@"标准间距" handler:^(__kindof QMUIPopupMenuItem * _Nonnull aItem, __kindof UIControl<QMUIPopupMenuItemViewProtocol> * _Nonnull aItemView, NSInteger section, NSInteger index) {
             if ([aItem.title isEqualToString:@"标准间距"]) {
                 aItem.title = @"紧凑间距";
                 weakSelf.tableView.qmui_insetGroupedHorizontalInset = 10;
@@ -48,7 +48,7 @@
                 weakSelf.tableView.qmui_insetGroupedHorizontalInset = TableViewInsetGroupedHorizontalInset;
             }
         }],
-        [QMUIPopupMenuButtonItem itemWithImage:nil title:@"标准圆角" handler:^(QMUIPopupMenuButtonItem * _Nonnull aItem) {
+        [QMUIPopupMenuItem itemWithTitle:@"标准圆角" handler:^(__kindof QMUIPopupMenuItem * _Nonnull aItem, __kindof UIControl<QMUIPopupMenuItemViewProtocol> * _Nonnull aItemView, NSInteger section, NSInteger index) {
             if ([aItem.title isEqualToString:@"标准圆角"]) {
                 aItem.title = @"小圆角";
                 weakSelf.tableView.qmui_insetGroupedCornerRadius = 3;
@@ -57,7 +57,7 @@
                 weakSelf.tableView.qmui_insetGroupedCornerRadius = TableViewInsetGroupedCornerRadius;
             }
         }],
-        [QMUIPopupMenuButtonItem itemWithImage:nil title:@"进入编辑" handler:^(QMUIPopupMenuButtonItem * _Nonnull aItem) {
+        [QMUIPopupMenuItem itemWithTitle:@"进入编辑" handler:^(__kindof QMUIPopupMenuItem * _Nonnull aItem, __kindof UIControl<QMUIPopupMenuItemViewProtocol> * _Nonnull aItemView, NSInteger section, NSInteger index) {
             if ([aItem.title isEqualToString:@"进入编辑"]) {
                 aItem.title = @"退出编辑";
                 weakSelf.tableView.editing = YES;

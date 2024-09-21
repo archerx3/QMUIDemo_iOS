@@ -26,7 +26,9 @@
     
     // 普通按钮
     self.normalButton = [QDUIHelper generateDarkFilledButton];
+    self.normalButton.qmui_height = 50;
     [self.normalButton setTitle:NSLocalizedString(@"QMUIButton_Normal_Button_Title", @"按钮，支持高亮背景色") forState:UIControlStateNormal];
+    self.normalButton.subtitle = @"支持副标题";
     [self.view addSubview:self.normalButton];
     
     self.separatorLayer = [CALayer qmui_separatorLayer];
@@ -72,7 +74,7 @@
     self.separatorLayer.frame = CGRectFlatMake(0, contentMinY + buttonSpacingHeight - PixelOne, CGRectGetWidth(self.view.bounds), PixelOne);
     
     // 边框按钮
-    self.borderedButton.frame = CGRectSetY(self.normalButton.frame, CGRectGetMaxY(self.separatorLayer.frame) + CGFloatGetCenter(buttonSpacingHeight, CGRectGetHeight(self.normalButton.frame)));
+    self.borderedButton.frame = CGRectSetXY(self.borderedButton.frame, CGFloatGetCenter(CGRectGetWidth(self.view.bounds), CGRectGetWidth(self.borderedButton.frame)), CGRectGetMaxY(self.separatorLayer.frame) + CGFloatGetCenter(buttonSpacingHeight, CGRectGetHeight(self.normalButton.frame)));
     
     // 图片+文字按钮
     self.imagePositionButton1.frame = CGRectFlatMake(0, contentMinY + buttonSpacingHeight * 2, CGRectGetWidth(self.view.bounds) / 2.0, buttonSpacingHeight);

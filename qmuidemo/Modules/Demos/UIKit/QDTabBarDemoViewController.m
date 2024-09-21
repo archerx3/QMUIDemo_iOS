@@ -58,7 +58,7 @@
 
 - (void)initDataSource {
     self.dataSourceWithDetailText = [[QMUIOrderedDictionary alloc] initWithKeysAndObjects:
-                                     @"双击 UITabBarItem 可触发双击事件", @"",
+                                     @"双击 UITabBarItem 可触发双击事件", @"点击本 cell 可重新设置 title，触发 item 重新构造",
                                      @"可获取 UITabBarItem 上的 imageView", @"例如这里拿到 imageView 后会做动画",
                                      @"可精准指定 UITabBar 的磨砂和前景色", @"兼容所有 iOS 版本。而系统仅在 iOS 13 及以后才提供 backgroundEffect 的修改方式，且系统的 UIVisualEffectView 在展示一些 UIBlurEffectStyle 时会强制加一个前景色，导致业务再叠加的前景色效果不可控，因此 QMUI 提供接口可以屏蔽系统的前景色，只显示业务的，从而达到精准控制设计效果的作用。",
                                      nil];
@@ -66,7 +66,10 @@
 
 - (void)didSelectCellWithTitle:(NSString *)title {
     
-    if ([title isEqualToString:@"可获取 UITabBarItem 上的 imageView"]) {
+    if ([title isEqualToString:@"双击 UITabBarItem 可触发双击事件"]) {
+        // 修改 title 会导致 UITabBar 重新构造 view，要确保这种场景也能让 doubleTap 生效
+        self.tabBar.items.firstObject.title = @"QMUIKit 2";
+    } else if ([title isEqualToString:@"可获取 UITabBarItem 上的 imageView"]) {
         // 注意只有在 UITabBar 可见的时候才能获取到这个 view，如果一初始化 UITabBarItem 就立马获取，是获取不到的。
         UIImageView *imageViewInTabBarItem = self.tabBar.items.firstObject.qmui_imageView;
         if (imageViewInTabBarItem) {

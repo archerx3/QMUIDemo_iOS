@@ -24,13 +24,13 @@ const CGFloat QDButtonSpacingHeight = 72;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         // 统一设置所有 QMUISearchController 搜索状态下的 statusBarStyle
-        OverrideImplementation([QMUISearchController class], @selector(initWithContentsViewController:), ^id(__unsafe_unretained Class originClass, SEL originCMD, IMP (^originalIMPProvider)(void)) {
-            return ^QMUISearchController *(QMUISearchController *selfObject, UIViewController *firstArgv) {
+        OverrideImplementation([QMUISearchController class], @selector(initWithContentsViewController:resultsViewController:), ^id(__unsafe_unretained Class originClass, SEL originCMD, IMP (^originalIMPProvider)(void)) {
+            return ^QMUISearchController *(QMUISearchController *selfObject, UIViewController *firstArgv, UIViewController *secondArgv) {
                 
                 // call super
-                QMUISearchController *(*originSelectorIMP)(id, SEL, UIViewController *);
-                originSelectorIMP = (QMUISearchController * (*)(id, SEL, UIViewController *))originalIMPProvider();
-                QMUISearchController *result = originSelectorIMP(selfObject, originCMD, firstArgv);
+                QMUISearchController *(*originSelectorIMP)(id, SEL, UIViewController *, UIViewController *);
+                originSelectorIMP = (QMUISearchController * (*)(id, SEL, UIViewController *, UIViewController *))originalIMPProvider();
+                QMUISearchController *result = originSelectorIMP(selfObject, originCMD, firstArgv, secondArgv);
                 
                 result.qmui_preferredStatusBarStyleBlock = ^UIStatusBarStyle{
                     if ([QMUIThemeManagerCenter.defaultThemeManager.currentThemeIdentifier isEqual:QDThemeIdentifierDark]) {

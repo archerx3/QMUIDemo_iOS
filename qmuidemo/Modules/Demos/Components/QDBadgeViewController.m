@@ -120,7 +120,14 @@
         
         UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
         cell.textLabel.qmui_shouldShowUpdatesIndicator = NO;
-        self.navigationItem.rightBarButtonItem.qmui_shouldShowUpdatesIndicator = NO;
+        [self.navigationItem.rightBarButtonItems enumerateObjectsUsingBlock:^(UIBarButtonItem * _Nonnull item, NSUInteger idx, BOOL * _Nonnull stop) {
+            item.qmui_shouldShowUpdatesIndicator = NO;
+            item.qmui_badgeInteger = 0;
+        }];
+        [self.toolbar.items enumerateObjectsUsingBlock:^(UIBarButtonItem * _Nonnull item, NSUInteger idx, BOOL * _Nonnull stop) {
+            item.qmui_shouldShowUpdatesIndicator = NO;
+            item.qmui_badgeInteger = 0;
+        }];
         [self.tabBar.items enumerateObjectsUsingBlock:^(UITabBarItem * _Nonnull item, NSUInteger idx, BOOL * _Nonnull stop) {
             item.qmui_shouldShowUpdatesIndicator = NO;
             item.qmui_badgeInteger = 0;

@@ -31,7 +31,7 @@
 
 @interface QMUIInteractiveDebugPanelEnumItem : QMUIInteractiveDebugPanelItem
 
-@property(nonatomic, strong) UISegmentedControl *segmentedControl;
+@property(nonatomic, strong) QMUIButton *menuButton;
 
 - (instancetype)initWithItems:(NSArray<NSString *> *)items;
 @end
@@ -47,6 +47,10 @@
     self = [super init];
     if (self) {
         self.titleLabel = [[UILabel alloc] qmui_initWithFont:UIFontMake(14) textColor:UIColor.blackColor];
+        self.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+        self.titleLabel.adjustsFontSizeToFitWidth = YES;
+        self.titleLabel.minimumScaleFactor = .8;
+        self.titleLabel.numberOfLines = 2;
         self.height = 44;
     }
     return self;
@@ -55,7 +59,6 @@
 - (void)setTitle:(NSString *)title {
     _title = title;
     self.titleLabel.text = title;
-    [self.titleLabel sizeToFit];
 }
 
 + (instancetype)itemWithTitle:(NSString *)title actionView:(__kindof UIView *)actionView valueGetter:(void (^)(__kindof UIView * _Nonnull))valueGetter valueSetter:(void (^)(__kindof UIView * _Nonnull))valueSetter {
@@ -103,12 +106,13 @@
     return item;
 }
 
-+ (instancetype)enumItemWithTitle:(NSString *)title items:(NSArray<NSString *> *)items valueGetter:(void (^)(UISegmentedControl * _Nonnull))valueGetter valueSetter:(void (^)(UISegmentedControl * _Nonnull))valueSetter {
++ (instancetype)enumItemWithTitle:(NSString *)title items:(NSArray<NSString *> *)items valueGetter:(void (^)(QMUIButton * _Nonnull, NSArray<NSString *> * _Nonnull))valueGetter valueSetter:(void (^)(QMUIButton * _Nonnull, NSArray<NSString *> * _Nonnull))valueSetter {
     QMUIInteractiveDebugPanelEnumItem *item = [[QMUIInteractiveDebugPanelEnumItem alloc] initWithItems:items];
+    item.extraObject = items;
     item.title = title;
-    item.actionView = item.segmentedControl;
-    item.valueGetter = valueGetter;
-    item.valueSetter = valueSetter;
+    item.actionView = item.menuButton;
+    item.valueGetter2 = valueGetter;
+    item.valueSetter2 = valueSetter;
     return item;
 }
 
@@ -222,16 +226,53 @@
 
 - (instancetype)initWithItems:(NSArray<NSString *> *)items {
     if (self = [super init]) {
-        _segmentedControl = [[UISegmentedControl alloc] initWithItems:items];
-        _segmentedControl.frame = CGRectSetWidth(_segmentedControl.frame, 240);// 统一按照最长的来就行啦
-        _segmentedControl.transform = CGAffineTransformMakeScale(.8, .8);
-        [_segmentedControl addTarget:self action:@selector(handleSegmentedControlEvent:) forControlEvents:UIControlEventValueChanged];
+        __weak __typeof(self)weakSelf = self;
+        _menuButton = [[QMUIButton alloc] qmui_initWithSize:CGSizeMake(160, 32)];
+        _menuButton.adjustsTitleTintColorAutomatically = YES;
+        _menuButton.adjustsImageTintColorAutomatically = YES;
+        _menuButton.layer.borderColor = UIColorSeparator.CGColor;
+        _menuButton.layer.borderWidth = PixelOne;
+        _menuButton.layer.cornerRadius = 5;
+        _menuButton.titleLabel.font = [UIFont fontWithName:@"Menlo" size:14];
+        UIImage *triangle = [UIImage qmui_imageWithShape:QMUIImageShapeTriangle size:CGSizeMake(8, 5) tintColor:UIColor.blackColor];
+        [_menuButton setImage:[[triangle qmui_imageWithOrientation:UIImageOrientationDown] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
+        [_menuButton setImage:[triangle imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateHighlighted];
+        _menuButton.imagePosition = QMUIButtonImagePositionRight;
+        _menuButton.spacingBetweenImageAndTitle = 4;
+        if (@available(iOS 14.0, *)) {
+            self.didAddBlock = ^(QMUIInteractiveDebugPanelEnumItem * _Nonnull item, UIView * _Nonnull containerView) {
+                item.menuButton.showsMenuAsPrimaryAction = YES;
+                if (@available(iOS 15.0, *)) {
+                    item.menuButton.menu = [UIMenu menuWithTitle:item.title image:nil identifier:nil options:UIMenuOptionsSingleSelection children:[items qmui_mapWithBlock:^id _Nonnull(NSString * _Nonnull aItem, NSInteger index) {
+                        UIAction *a = [UIAction actionWithTitle:aItem image:nil identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
+                            [weakSelf.menuButton setTitle:action.title forState:UIControlStateNormal];
+                            if (weakSelf.valueSetter2) {
+                                weakSelf.valueSetter2(weakSelf.menuButton, weakSelf.extraObject);
+                            }
+                        }];
+                        if ([item.menuButton.currentTitle isEqualToString:aItem]) {
+                            a.state = UIMenuElementStateOn;
+                        }
+                        return a;
+                    }]];
+                } else {
+                    // 低于 iOS 15 处理选择不太方便，干脆不支持算了
+                    item.menuButton.menu = [UIMenu menuWithChildren:[items qmui_mapWithBlock:^id _Nonnull(NSString * _Nonnull aItem, NSInteger index) {
+                        return [UIAction actionWithTitle:aItem image:nil identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
+                            [weakSelf.menuButton setTitle:action.title forState:UIControlStateNormal];
+                            if (weakSelf.valueSetter2) {
+                                weakSelf.valueSetter2(weakSelf.menuButton, weakSelf.extraObject);
+                            }
+                        }];
+                    }]];
+                }
+            };
+        } else {
+            _menuButton.enabled = NO;
+            [_menuButton setTitle:@"仅支持 iOS 14+" forState:UIControlStateNormal];
+        }
     }
     return self;
-}
-
-- (void)handleSegmentedControlEvent:(UISegmentedControl *)segmentedControl {
-    if (self.valueSetter) self.valueSetter(segmentedControl);
 }
 
 @end

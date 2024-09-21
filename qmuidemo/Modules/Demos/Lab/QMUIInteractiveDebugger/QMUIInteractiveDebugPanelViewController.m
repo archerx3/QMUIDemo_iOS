@@ -33,6 +33,11 @@
     }
 }
 
+// 与 QMUIPopupContainerView 搭配使用时，只要没改过的系统默认 view，它就会被系统修改宽度，不知道为什么，这里强制换成普通 view 即可
+- (void)loadView {
+    self.view = UIView.new;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.padding = UIEdgeInsetsMake(20, 24, 24, 24);
@@ -95,9 +100,14 @@
         [self.view addSubview:item.titleLabel];
         [self.view addSubview:item.actionView];
         if (item.valueGetter) item.valueGetter(item.actionView);
+        if (item.valueGetter2) item.valueGetter2(item.actionView, item.extraObject);
         if (item.didAddBlock) item.didAddBlock(item, self.view);
         [self.view setNeedsLayout];
     }
+}
+
+- (__kindof QMUIInteractiveDebugPanelItem *)itemMatched:(BOOL (NS_NOESCAPE^)(__kindof QMUIInteractiveDebugPanelItem * _Nonnull))block {
+    return [self.items qmui_firstMatchWithBlock:block];
 }
 
 - (NSArray<QMUIInteractiveDebugPanelItem *> *)debugItems {
@@ -111,9 +121,8 @@
     
     CGFloat lastItemMaxY = self.titleLabel.qmui_bottom + self.titleMarginBottom;
     for (QMUIInteractiveDebugPanelItem *item in self.items) {
-        item.titleLabel.qmui_left = self.padding.left;
-        item.titleLabel.center = CGPointMake(item.titleLabel.center.x, lastItemMaxY + item.height / 2);
-        item.actionView.center = CGPointMake(self.view.qmui_width - self.padding.right - CGRectGetWidth(item.actionView.frame) / 2, item.titleLabel.center.y);
+        item.actionView.center = CGPointMake(self.view.qmui_width - self.padding.right - CGRectGetWidth(item.actionView.frame) / 2, lastItemMaxY + item.height / 2);
+        item.titleLabel.frame = CGRectMake(self.padding.left, lastItemMaxY, CGRectGetMinX(item.actionView.frame) - 8 - self.padding.left, item.height);
         lastItemMaxY += item.height;
     }
 }

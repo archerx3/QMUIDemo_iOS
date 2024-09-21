@@ -18,8 +18,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, copy) NSString *title;
 @property(nonatomic, strong, readonly) UILabel *titleLabel;
 @property(nonatomic, strong) __kindof UIView *actionView;
+@property(nonatomic, strong, nullable) __kindof NSObject *extraObject;
 @property(nonatomic, copy, nullable) void (^valueGetter)(__kindof UIView *actionView);
 @property(nonatomic, copy, nullable) void (^valueSetter)(__kindof UIView *actionView);
+@property(nonatomic, copy, nullable) void (^valueGetter2)(__kindof UIView *actionView,  __kindof NSObject * _Nullable extraObject);
+@property(nonatomic, copy, nullable) void (^valueSetter2)(__kindof UIView *actionView, __kindof NSObject * _Nullable extraObject);
 @property(nonatomic, assign) CGFloat height;
 @property(nonatomic, copy, nullable) void (^didAddBlock)(__kindof QMUIInteractiveDebugPanelItem *item, UIView *containerView);
 
@@ -37,8 +40,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// BOOL 值 item，提供一个 UISwitch 开启/关闭
 + (instancetype)boolItemWithTitle:(NSString *)title valueGetter:(nullable void (^)(UISwitch *actionView))valueGetter valueSetter:(nullable void (^)(UISwitch *actionView))valueSetter;
 
-/// enum 值，提供一个 UISegmentedControl 用于在几个候选值里选
-+ (instancetype)enumItemWithTitle:(NSString *)title items:(NSArray<NSString *> *)items valueGetter:(nullable void (^)(UISegmentedControl *actionView))valueGetter valueSetter:(nullable void (^)(UISegmentedControl *actionView))valueSetter;
+/// enum 值，提供一个按钮点击后会出现菜单，在菜单里选对应的选项
+/// 仅在 iOS 14 及以上版本里可用
++ (instancetype)enumItemWithTitle:(NSString *)title items:(NSArray<NSString *> *)items valueGetter:(nullable void (^)(QMUIButton *actionView, NSArray<NSString *> *items))valueGetter valueSetter:(nullable void (^)(QMUIButton *actionView, NSArray<NSString *> *items))valueSetter;
 
 /// 可连续拖动的数值
 + (instancetype)sliderItemWithTitle:(NSString *)title minValue:(float)minValue maxValue:(float)maxValue valueGetter:(nullable void (^)(UISlider *actionView))valueGetter valueSetter:(nullable void (^)(UISlider *actionView))valueSetter;

@@ -84,6 +84,7 @@
     // QMUISearchController 有两种使用方式，一种是独立使用，一种是集成到 QMUICommonTableViewController 里使用。为了展示它的使用方式，这里使用第一种，不理会 QMUICommonTableViewController 内部自带的 QMUISearchController
     self.mySearchController = [[QMUISearchController alloc] initWithContentsViewController:self];
     self.mySearchController.searchResultsDelegate = self;
+    self.mySearchController.supportsSwipeToDismissSearch = YES;
     self.mySearchController.launchView = [[QDRecentSearchView alloc] init];// launchView 会自动布局，无需处理 frame
     self.mySearchController.searchBar.qmui_usedAsTableHeaderView = YES;// 以 tableHeaderView 的方式使用 searchBar 的话，将其置为 YES，以辅助兼容一些系统 bug
     self.tableView.tableHeaderView = self.mySearchController.searchBar;

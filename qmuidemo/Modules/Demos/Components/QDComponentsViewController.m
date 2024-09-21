@@ -18,6 +18,7 @@
 #import "QDEmotionsViewController.h"
 #import "QDPieProgressViewController.h"
 #import "QDPopupContainerViewController.h"
+#import "QDPopupMenuViewController.h"
 #import "QDModalPresentationViewController.h"
 #import "QDDialogViewController.h"
 #import "QDFloatLayoutViewController.h"
@@ -38,14 +39,23 @@
 #import "QDNavigationBarScrollingSnapAnimatorViewController.h"
 #import "QDCollectionDemoViewController.h"
 #import "QDCollectionStackDemoViewController.h"
+#import "QDLayouterViewController.h"
+#import "QDSheetPresentationViewController.h"
+#import "QDCheckboxViewController.h"
 
 @implementation QDComponentsViewController
 
+- (void)didInitialize {
+    [super didInitialize];
+    self.title = @"Components";
+}
+
 - (void)setupNavigationItems {
     [super setupNavigationItems];
-    self.title = @"Components";
     self.navigationItem.rightBarButtonItem = [UIBarButtonItem qmui_itemWithImage:UIImageMake(@"icon_nav_about") target:self action:@selector(handleAboutItemEvent)];
     AddAccessibilityLabel(self.navigationItem.rightBarButtonItem, @"打开关于界面");
+    
+    self.qmui_sheetPresentationNavigationBar.backgroundColor = UIColorBlue;
 }
 
 - (void)initDataSource {
@@ -54,6 +64,7 @@
                        @"QMUIModalPresentationViewController", UIImageMake(@"icon_grid_modal"),
                        @"QMUIDialogViewController", UIImageMake(@"icon_grid_dialog"),
                        @"QMUIMoreOperationController", UIImageMake(@"icon_grid_moreOperation"),
+                       @"QMUISheetPresentation", UIImageMake(@"icon_grid_sheet"),
                        @"QMUINavigationTitleView", UIImageMake(@"icon_grid_titleView"),
                        @"QMUIEmptyView", UIImageMake(@"icon_grid_emptyView"),
                        @"QMUIToastView", UIImageMake(@"icon_grid_toast"),
@@ -74,7 +85,9 @@
                        @"QMUIScrollAnimator", UIImageMake(@"icon_grid_scrollAnimator"),
                        @"QMUIConsole", UIImageMake(@"icon_grid_console"),
                        @"QMUICollectionViewLayout", UIImageMake(@"icon_grid_collection"),
+                       @"QMUILayouter", UIImageMake(@"icon_grid_floatView"),
                        @"QMUITheme", UIImageMake(@"icon_grid_theme"),
+                       @"QMUICheckbox", UIImageMake(@"icon_grid_checkbox"),
                        nil];
 }
 
@@ -158,7 +171,24 @@
         viewController = [[QDPieProgressViewController alloc] init];    
     }
     else if ([title isEqualToString:@"QMUIPopupContainerView"]) {
-        viewController = [[QDPopupContainerViewController alloc] init];
+        viewController = ({
+            QDCommonListViewController *vc = QDCommonListViewController.new;
+            vc.dataSource = @[
+                NSStringFromClass([QMUIPopupContainerView class]),
+                NSStringFromClass([QMUIPopupMenuView class])
+            ];
+            vc.didSelectTitleBlock = ^(NSString *title) {
+                UIViewController *viewController = nil;
+                if ([title isEqualToString:NSStringFromClass([QMUIPopupContainerView class])]) {
+                    viewController = [[QDPopupContainerViewController alloc] init];
+                } else if ([title isEqualToString:NSStringFromClass([QMUIPopupMenuView class])]) {
+                    viewController = [[QDPopupMenuViewController alloc] init];
+                }
+                viewController.title = title;
+                [weakSelf.navigationController pushViewController:viewController animated:YES];
+            };
+            vc;
+        });
     }
     else if ([title isEqualToString:@"QMUIModalPresentationViewController"]) {
         viewController = [[QDModalPresentationViewController alloc] initWithStyle:UITableViewStyleGrouped];
@@ -233,8 +263,17 @@
             vc;
         });
     }
+    else if ([title isEqualToString:@"QMUILayouter"]) {
+        viewController = [[QDLayouterViewController alloc] init];
+    }
     else if ([title isEqualToString:@"QMUITheme"]) {
         viewController = [[QDThemeViewController alloc] init];
+    }
+    else if ([title isEqualToString:@"QMUISheetPresentation"]) {
+        viewController = [[QDSheetPresentationViewController alloc] init];
+    }
+    else if ([title isEqualToString:@"QMUICheckbox"]) {
+        viewController = [[QDCheckboxViewController alloc] init];
     }
     viewController.title = title;
     [self.navigationController pushViewController:viewController animated:YES];

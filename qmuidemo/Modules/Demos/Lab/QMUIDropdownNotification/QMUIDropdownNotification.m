@@ -57,6 +57,7 @@ const NSTimeInterval QMUIDropdownNotificationDurationInfinite = -1;
     self.modalPresentationViewController = [[QMUIModalPresentationViewController alloc] init];
     self.modalPresentationViewController.dimmingView = nil;
     self.modalPresentationViewController.shouldDimmedAppAutomatically = NO;
+    self.modalPresentationViewController.shouldBecomeKeyWindow = NO;
     self.modalPresentationViewController.contentView = self.view;
     if (!self.layoutMarginsBlock) {
         // 只是个预防而已

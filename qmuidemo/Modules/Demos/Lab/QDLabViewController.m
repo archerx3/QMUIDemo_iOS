@@ -30,7 +30,7 @@
 - (void)initDataSource {
     [super initDataSource];
     self.dataSource = @[@"All System Fonts",
-                        @"Default Line Height",
+                        @"Font & LineHeight",
                         @"Animation",
                         @"Log Manager",
                         @"Interactive Debugger",
@@ -46,7 +46,7 @@
     UIViewController *viewController = nil;
     if ([title isEqualToString:@"All System Fonts"]) {
         viewController = [[QDAllSystemFontsViewController alloc] init];
-    } else if ([title isEqualToString:@"Default Line Height"]) {
+    } else if ([title isEqualToString:@"Font & LineHeight"]) {
         viewController = [[QDFontPointSizeAndLineHeightViewController alloc] init];
     } else if ([title isEqualToString:@"Animation"]) {
         viewController = ({
@@ -104,9 +104,13 @@
     [self.navigationController pushViewController:viewController animated:YES];
 }
 
+- (void)didInitialize {
+    [super didInitialize];
+    self.title = @"Lab";
+}
+
 - (void)setupNavigationItems {
     [super setupNavigationItems];
-    self.title = @"Lab";
     self.navigationItem.rightBarButtonItem = [UIBarButtonItem qmui_itemWithImage:UIImageMake(@"icon_nav_about") target:self action:@selector(handleAboutItemEvent)];
     AddAccessibilityLabel(self.navigationItem.rightBarButtonItem, @"打开关于界面");
 }

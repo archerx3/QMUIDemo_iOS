@@ -66,9 +66,13 @@
                        nil];
 }
 
+- (void)didInitialize {
+    [super didInitialize];
+    self.title = @"QMUIKit";
+}
+
 - (void)setupNavigationItems {
     [super setupNavigationItems];
-    self.title = @"QMUIKit";
     self.navigationItem.rightBarButtonItem = [UIBarButtonItem qmui_itemWithImage:UIImageMake(@"icon_nav_about") target:self action:@selector(handleAboutItemEvent)];
     AddAccessibilityLabel(self.navigationItem.rightBarButtonItem, @"打开关于界面");
 }

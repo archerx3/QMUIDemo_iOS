@@ -11,7 +11,7 @@
 
 @interface QDInteractiveDebugViewController ()
 
-@property(nonatomic, strong) UIButton *presentButton;
+@property(nonatomic, strong) QMUIButton *presentButton;
 @property(nonatomic, strong) QMUIInteractiveDebugPanelViewController *asViewController;
 @end
 
@@ -22,6 +22,7 @@
     self.presentButton = [QDUIHelper generateLightBorderedButton];
     self.presentButton.contentEdgeInsets = UIEdgeInsetsMake(8, 20, 8, 20);
     [self.presentButton setTitle:@"点击打开 Debug 面板" forState:UIControlStateNormal];
+    self.presentButton.spacingBetweenImageAndTitle = 4;
     [self.presentButton addTarget:self action:@selector(handlePresentButtonEvent) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.presentButton];
     
@@ -62,11 +63,42 @@
     } valueSetter:^(QMUITextField * _Nonnull actionView) {
         weakSelf.presentButton.backgroundColor = [UIColor qmui_colorWithRGBAString:actionView.text];
     }],
-        [QMUIInteractiveDebugPanelItem boolItemWithTitle:@"可用" valueGetter:^(UISwitch * _Nonnull actionView) {
-        actionView.on = weakSelf.presentButton.enabled;
+        [QMUIInteractiveDebugPanelItem boolItemWithTitle:@"显示图标" valueGetter:^(UISwitch * _Nonnull actionView) {
+        actionView.on = !!weakSelf.presentButton.currentImage;
     } valueSetter:^(UISwitch * _Nonnull actionView) {
-        weakSelf.presentButton.enabled = actionView.on;
+        [weakSelf.presentButton setImage:actionView.on ? [UIImageMake(@"icon_nav_about") qmui_imageResizedInLimitedSize:CGSizeMake(16, 16)] : nil forState:UIControlStateNormal];
+        [weakSelf.view setNeedsLayout];
     }],
+        ({
+        QMUIOrderedDictionary<NSNumber *, NSString *> *stateMap = [[QMUIOrderedDictionary alloc] initWithKeysAndObjects:
+                                                                   @(UIControlStateNormal), @"Normal",
+                                                                   @(UIControlStateSelected), @"Selected",
+                                                                   @(UIControlStateDisabled), @"Disabled", nil
+        ];
+        QMUIInteractiveDebugPanelItem *item = [QMUIInteractiveDebugPanelItem enumItemWithTitle:@"切换状态" items:stateMap.allValues valueGetter:^(QMUIButton * _Nonnull actionView, NSArray<NSString *> * _Nonnull items) {
+            NSString *title = stateMap[@(weakSelf.presentButton.state)] ?: @"Normal";
+            [actionView setTitle:title forState:UIControlStateNormal];
+        } valueSetter:^(QMUIButton * _Nonnull actionView, NSArray<NSString *> * _Nonnull items) {
+            NSString *title = actionView.currentTitle;
+            [stateMap.allValues enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                if ([title isEqualToString:obj]) {
+                    UIControlState state = stateMap.allKeys[idx].integerValue;
+                    if (state == UIControlStateSelected) {
+                        weakSelf.presentButton.selected = YES;
+                        weakSelf.presentButton.enabled = YES;
+                    } else if (state == UIControlStateDisabled) {
+                        weakSelf.presentButton.selected = NO;
+                        weakSelf.presentButton.enabled = NO;
+                    } else {
+                        // Normal
+                        weakSelf.presentButton.selected = NO;
+                        weakSelf.presentButton.enabled = YES;
+                    }
+                }
+            }];
+        }];
+        item;
+    }),
     ]];
     return vc;
 }

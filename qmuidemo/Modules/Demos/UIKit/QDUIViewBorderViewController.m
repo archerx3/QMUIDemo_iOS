@@ -333,7 +333,7 @@
     if (textField == self.widthTextField) {
         self.targetView.qmui_borderWidth = [textField.text doubleValue];
     } else if (textField == self.insetsTextField) {
-        NSArray<NSNumber *> *insetsNumber = [[textField.text.qmui_trim componentsSeparatedByString:@" "] qmui_mapWithBlock:^id _Nonnull(NSString * _Nonnull item) {
+        NSArray<NSNumber *> *insetsNumber = [[textField.text.qmui_trim componentsSeparatedByString:@" "] qmui_mapWithBlock:^id _Nonnull(NSString * _Nonnull item, NSInteger index) {
             return [NSNumber numberWithDouble:item.doubleValue];
         }];
         if (insetsNumber.count != 4) return;

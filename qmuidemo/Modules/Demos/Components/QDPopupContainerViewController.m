@@ -57,12 +57,12 @@
 @property(nonatomic, strong) QMUIButton *button3;
 @property(nonatomic, strong) QMUIPopupContainerView *popupHorizontal;
 @property(nonatomic, strong) QMUIButton *button4;
-@property(nonatomic, strong) QMUIPopupMenuView *popupByWindow;
+@property(nonatomic, strong) QMUIPopupContainerView *popupByWindow;
 @property(nonatomic, strong) QMUIButton *button5;
 @property(nonatomic, strong) QDPopupContainerView *popupWithCustomView;
 @property(nonatomic, strong) CALayer *separatorLayer1;
 @property(nonatomic, strong) CALayer *separatorLayer2;
-@property(nonatomic, strong) QMUIPopupMenuView *popupAtBarButtonItem;
+@property(nonatomic, strong) QMUIPopupContainerView *popupAtBarButtonItem;
 @end
 
 @implementation QDPopupContainerViewController
@@ -145,24 +145,13 @@
     
     
     // 使用方法 2，以 UIWindow 的形式显示到界面上，这种无需默认隐藏，也无需 add 到某个 UIView 上
-    self.popupByWindow = [[QMUIPopupMenuView alloc] init];
+    self.popupByWindow = [[QMUIPopupContainerView alloc] init];
     self.popupByWindow.automaticallyHidesWhenUserTap = YES;// 点击空白地方消失浮层
     self.popupByWindow.tintColor = UIColor.qd_tintColor;
     self.popupByWindow.maskViewBackgroundColor = [UIColor.qd_tintColor colorWithAlphaComponent:.15];// 使用方法 2 并且打开了 automaticallyHidesWhenUserTap 的情况下，可以修改背景遮罩的颜色
-    self.popupByWindow.shouldShowItemSeparator = YES;
-    self.popupByWindow.itemConfigurationHandler = ^(QMUIPopupMenuView *aMenuView, QMUIPopupMenuButtonItem *aItem, NSInteger section, NSInteger index) {
-        // 利用 itemConfigurationHandler 批量设置所有 item 的样式
-        aItem.button.highlightedBackgroundColor = [UIColor.qd_tintColor colorWithAlphaComponent:.2];
-    };
-    self.popupByWindow.items = @[[QMUIPopupMenuButtonItem itemWithImage:[UIImageMake(@"icon_tabbar_uikit") imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] title:@"QMUIKit" handler:^(QMUIPopupMenuButtonItem *aItem) {
-        [aItem.menuView hideWithAnimated:YES];
-    }],
-                                 [QMUIPopupMenuButtonItem itemWithImage:[UIImageMake(@"icon_tabbar_component") imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] title:@"Components" handler:^(QMUIPopupMenuButtonItem *aItem) {
-                                     [aItem.menuView hideWithAnimated:YES];
-                                 }],
-                                 [QMUIPopupMenuButtonItem itemWithImage:[UIImageMake(@"icon_tabbar_lab") imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] title:@"Lab" handler:^(QMUIPopupMenuButtonItem *aItem) {
-                                     [aItem.menuView hideWithAnimated:YES];
-                                 }]];
+    self.popupByWindow.textLabel.text = @"以 window 形式显示，文字写得长一点才能显得好看一点";
+    self.popupByWindow.textLabel.textColor = UIColor.qd_mainTextColor;
+    self.popupByWindow.textLabel.font = UIFontMake(16);
     self.popupByWindow.didHideBlock = ^(BOOL hidesByUserTap) {
         [weakSelf.button4 setTitle:@"显示菜单浮层" forState:UIControlStateNormal];
     };
@@ -176,14 +165,11 @@
     };
     
     // 在 UIBarButtonItem 上显示
-    self.popupAtBarButtonItem = [[QMUIPopupMenuView alloc] init];
+    self.popupAtBarButtonItem = [[QMUIPopupContainerView alloc] init];
     self.popupAtBarButtonItem.automaticallyHidesWhenUserTap = YES;// 点击空白地方消失浮层
-    self.popupAtBarButtonItem.maximumWidth = 180;
-    self.popupAtBarButtonItem.shouldShowItemSeparator = YES;
-    self.popupAtBarButtonItem.tintColor = UIColor.qd_tintColor;
-    self.popupAtBarButtonItem.items = @[[QMUIPopupMenuButtonItem itemWithImage:[UIImageMake(@"icon_tabbar_uikit") imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] title:@"QMUIKit" handler:NULL],
-                              [QMUIPopupMenuButtonItem itemWithImage:[UIImageMake(@"icon_tabbar_component") imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] title:@"Components" handler:NULL],
-                              [QMUIPopupMenuButtonItem itemWithImage:[UIImageMake(@"icon_tabbar_lab") imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] title:@"Lab" handler:NULL]];
+    self.popupAtBarButtonItem.textLabel.textColor = UIColor.qd_mainTextColor;
+    self.popupAtBarButtonItem.textLabel.font = UIFontMake(16);
+    self.popupAtBarButtonItem.textLabel.text = @"指向某个 UIBarButtonItem";
 }
 
 - (void)setupNavigationItems {
